@@ -1,0 +1,191 @@
+#!/usr/bin/python
+
+# QTrayNotify
+# Copyright (C) 2010 Ivan Babushkin (jogrms@gmail.com)
+#  
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+import sys
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from Xlib import *
+import Xlib.protocol.event
+
+w = 200
+h = 60
+
+class Reader(QThread):
+	dataReceived = pyqtSignal(str)
+
+	def __init__(self):
+		QThread.__init__(self)
+
+	def run(self):
+		while True:
+			data = sys.stdin.readline()
+			data = unicode(data, "utf-8")
+			self.dataReceived.emit(data)
+
+class Msg(QWidget):
+	clicked = pyqtSignal()
+
+	def __init__(self):
+		QWidget.__init__(self)
+		titlePalette = self.palette()
+		textPalette = self.palette()
+		titlePalette.setColor(QPalette.Window, QColor(0x202020))
+		titlePalette.setColor(QPalette.WindowText, QColor(0x888888))
+		textPalette.setColor(QPalette.Window, QColor(0x0))
+		textPalette.setColor(QPalette.WindowText, QColor(0xcccccc))
+		
+		self.setWindowFlags(Qt.ToolTip)
+		self.resize(w, h)
+		self.move(QDesktopWidget().screenGeometry().width() - w,
+				QDesktopWidget().screenGeometry().height() - h)
+		self.setPalette(titlePalette)
+
+		self.frame = QWidget(self)
+		self.frame.resize(w - 6, h - 20)
+		self.frame.move(3, 17)
+		self.frame.setPalette(textPalette)
+		self.frame.setAutoFillBackground(True)
+
+		self.label = QLabel('Label', self)
+		self.label.resize(w - 6, 17)
+		self.label.move(3, 0)
+		self.label.setPalette(titlePalette)
+		font = self.label.font()
+		font.setPointSize(font.pointSize() - 2)
+		self.label.setFont(font)
+		self.label.setAlignment(Qt.AlignCenter)
+
+		self.msg = QLabel('Text', self.frame)
+		self.msg.resize(w - 6, (h - 20) / 2)
+		self.msg.move(0, 0)
+		self.msg.setPalette(textPalette)
+		self.msg.setAlignment(Qt.AlignCenter)
+
+		self.msg1 = QLabel('Text', self.frame)
+		self.msg1.resize(w - 6, (h - 20) / 2)
+		self.msg1.move(0, (h - 20) / 2)
+		self.msg1.setPalette(titlePalette)
+		self.msg1.setAlignment(Qt.AlignCenter)
+		font = self.msg1.font()
+		font.setPointSize(font.pointSize() - 2)
+		self.msg1.setFont(font)
+
+	def mousePressEvent(self, event):
+		if event.button() == Qt.LeftButton:
+			self.clicked.emit()
+		self.hide()
+		event.accept()
+
+	def setText(self, text1, text2):
+		self.msg.setText(text1)
+		self.msg1.setText(text2)
+		if text2 == QString(''):
+			self.msg.resize(w - 6, h - 20)
+		else:
+			self.msg.resize(w - 6, (h - 20) / 2)
+
+	def setLabel(self, text):
+		self.label.setText(text)
+
+class Icon(QSystemTrayIcon):
+	def __init__(self):
+		QSystemTrayIcon.__init__(self)
+		self.setIcon(QIcon('/usr/share/icons/qtraynotify/msg.svg'))
+
+		self.menu = QMenu()
+		self.actionExit = QAction('Exit', self.menu)
+		self.menu.addAction(self.actionExit)
+		self.setContextMenu(self.menu)
+
+		self.actionExit.triggered.connect(qApp.quit)
+		self.activated.connect(self.whenActivated)
+		self.setToolTip('Mcabber')
+
+		self.msg = Msg()
+		self.msg.clicked.connect(self.whenClicked)
+		self.msg.hide()
+		self.msg.setLabel('Mcabber: incoming message')
+		
+		self.timer = QTimer()
+		self.timer.timeout.connect(self.msg.hide)
+
+		self.reader = Reader()
+		self.reader.dataReceived.connect(self.dataReceived)
+		self.reader.start()
+
+	def whenClicked(self):
+		self.changeWorkspace(2)
+		self.setIcon(QIcon('/usr/share/icons/qtraynotify/msg.svg'))
+		self.msg.hide()
+		self.timer.stop()
+
+	def whenActivated(self, reason):
+		if reason == 3:
+			self.whenClicked()
+
+	def changeWorkspace(self, n):
+		display = Xlib.display.Display()
+		screen = display.screen()
+		root = screen.root
+		data = ([n] + [X.CurrentTime] + [0] * 3) [:5]
+		event = Xlib.protocol.event.ClientMessage(window = root,
+				client_type = display.intern_atom("_NET_CURRENT_DESKTOP"),
+				data = (32, (data)))
+		mask = (X.SubstructureRedirectMask|X.SubstructureNotifyMask)
+		root.send_event(event, event_mask=mask)
+		display.flush()
+
+	def dataReceived(self, data):
+		if data != '\n':
+			data1 = QString(data)
+			data2 = QString(data)
+			data2.remove(QRegExp('^.*\r'))
+			data1.remove(QRegExp('\r.*$'))
+			data1.remove('\n')
+			data2.remove('\n')
+			if data1 != QString(''):
+				self.setIcon(QIcon('/usr/share/icons/qtraynotify/msg-new.svg'))
+				if data2 != QString(''):
+					message = QFile(data2)
+					message.open(QIODevice.ReadOnly | QIODevice.Text)
+					stream = QTextStream(message)
+					stream.setCodec("UTF-8")
+					messageString = QString(stream.readAll())
+					message.close()
+					messageString1 = messageString.left(25)
+					if messageString1 != messageString:
+						messageString1.append('...')
+					messageString1.remove('\n')
+					self.msg.setText(data1, messageString1)
+				else:
+					self.msg.setText(data1, '')
+				self.msg.show()
+				self.timer.start(7000);
+			else:
+				self.setIcon(QIcon('/usr/share/icons/qtraynotify/msg.svg'))
+				self.msg.hide()
+				self.timer.stop()
+
+
+if __name__ == '__main__':
+	app = QApplication(sys.argv)
+	icon = Icon()
+	icon.show()
+	sys.exit(app.exec_())
+

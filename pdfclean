@@ -1,0 +1,3 @@
+#!/bin/bash
+latexmk "${1}"
+latexmk -c "${1}"

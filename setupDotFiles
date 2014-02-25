@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# First time use/add new config?
+# Put the new file in the repo, then run the script.
+# This will create links in the proper locations for Linux to read.
+
+# Add files/folders to add. Additions are recursive, do not add
+# .ssh, .aws or similar files with keys/passwords.
+# These paths are relative to the $HOME dir.
+confs=(
+    ".config/gtk-2.0" \
+    ".config/gtk-3.0" \
+    ".emacs" \
+    ".gitconfig" \
+    ".gtkrc-2.0" \
+    ".i3" \
+    ".i3status.conf" \
+    ".latexmkrc" \
+    ".local/share/applications" \
+    ".mcabber/eventcmd" \
+    ".mcabberrc" \
+    ".nanorc" \
+    ".oh-my-zsh/themes/martin.zsh-theme" \
+    ".xbindkeysrc" \
+    ".xinitrc" \
+    ".Xresources" \
+    ".zshrc" \
+)
+
+# Path to the repo where configs are kept.
+confs_dir="$HOME/github/configs"
+
+# STart working.
+for conf in ${confs[*]}
+do
+    file="$confs_dir/$conf"
+    link="$HOME/$conf"
+
+    # Is it in repo?
+    if [ -e "$file" ]; then
+        # Is there a link/file with same name in filetreE?
+        if [ -e "$link" ]; then
+            # Do they point to same inode/file? Is it a correct link?
+            if [ "$file" -ef "$link" ]; then
+                echo "$link is already correct"
+                continue
+            else
+                # Remove the false link, assume repo version is better.
+                echo "Removing old $link"
+                rm -r "$link"
+            fi
+        fi
+
+        # Create links for all entries in config repo.
+        echo "Linking $confs_dir/$conf to $HOME/$conf"
+        mkdir -p "$HOME/$(dirname $conf)"
+
+        if [ -d "$confs_dir/$conf" ]; then
+            ln -sf "$confs_dir/$conf" "$HOME/$(dirname $conf)"
+        else
+            ln -sf "$confs_dir/$conf" "$HOME/$conf"
+        fi
+
+    else
+        # Check the confs array in the top :)
+        echo "Error: $confs_dir/$conf does no exist!"
+        exit 1
+    fi
+done
+
+# Yay success for us!
+echo "Success: All links are done!"
+exit 0
