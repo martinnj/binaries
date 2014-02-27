@@ -1,18 +1,14 @@
-#!/bin/sh
-#
+#!/usr/bin/env sh
 
-screenshot() {
-	case $1 in
-	full)
-		scrot -m
-		;;
-	window)
-		sleep 1
-		scrot -s
-		;;
-	*)
-		;;
-	esac;
-}
-
-screenshot $1
+FILENAME=screenshots/`date +%d.%m.%y.%T`.png
+case $1 in
+    full)
+	scrot -m $FILENAME
+	;;
+    window)
+	sleep 1
+	scrot -s $FILENAME
+	;;
+    *)
+	;;
+esac;
