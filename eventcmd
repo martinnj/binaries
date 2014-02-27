@@ -12,11 +12,7 @@
 
 if [ "$1" = "MSG" ]; then
 	if [ \( "$2" = "IN" \) -o \( "$2" = "MUC" \) ]; then
-		if [ "$4" != "" ]; then
-			echo -e "$3\r$4" > /tmp/mc.fifo &
-		else
-			echo -e "$3\r" > /tmp/mc.fifo &
-		fi
+	    echo -e "$3\r" > /tmp/mc.fifo &
 	fi
 fi
 if [ "$1" = "UNREAD" ]; then
