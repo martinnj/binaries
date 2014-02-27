@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # First time use/add new config?
 # Put the new file in the repo, then run the script.

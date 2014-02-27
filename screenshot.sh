@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 FILENAME=screenshots/`date +%d.%m.%y.%T`.png
 case $1 in
