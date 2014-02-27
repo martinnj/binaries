@@ -17,7 +17,6 @@ confs=(
     ".i3status.conf" \
     ".latexmkrc" \
     ".local/share/applications" \
-    ".mcabber/eventcmd" \
     ".mcabberrc" \
     ".nanorc" \
     ".oh-my-zsh/themes/martin.zsh-theme" \
