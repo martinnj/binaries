@@ -12,12 +12,12 @@
 
 if [ "$1" = "MSG" ]; then
 	if [ \( "$2" = "IN" \) -o \( "$2" = "MUC" \) ]; then
-	    echo -e "$3\r" > /tmp/mc.fifo &
+	    echo -e "$3\r" > /tmp/mc.notify &
 	fi
 fi
 if [ "$1" = "UNREAD" ]; then
         num=`echo "$2" | grep -o "^[[:digit:]]* "`
 	if [ $num = "0" ]; then
-		echo -e "\rAll Alone." > /tmp/mc.fifo &
+		echo -e "\rQuite" > /tmp/mc.notify &
 	fi
 fi
