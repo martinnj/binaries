@@ -13,6 +13,7 @@
 if [ "$1" = "MSG" ]; then
 	if [ \( "$2" = "IN" \) -o \( "$2" = "MUC" \) ]; then
 	    echo -e "$3\r" > /tmp/mc.notify &
+	    notify-send "Recieved a message from $3" &
 	fi
 fi
 if [ "$1" = "UNREAD" ]; then
