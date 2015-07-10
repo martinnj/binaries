@@ -22,15 +22,15 @@ confs=(
     ".mcabberrc" \
     ".nanorc" \
     ".oh-my-zsh/themes/martin.zsh-theme" \
-    ".spectrwm.conf" \
-    ".xbindkeysrc" \
+    #".spectrwm.conf" \
+    #".xbindkeysrc" \
     ".xinitrc" \
     ".Xresources" \
     ".zshrc" \
 )
 
 # Path to the repo where configs are kept.
-confs_dir="$HOME/github/configs"
+confs_dir="$HOME/git/configs"
 
 # Start working.
 for conf in ${confs[*]}
