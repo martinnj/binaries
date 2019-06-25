@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-# Move the curser every 120 seconds to prevent sleeping.
-
-while true; do
-    echo "Moving mouse"
-    xte 'mousermove 1 1'
-    sleep 120
-done
