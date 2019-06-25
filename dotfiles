@@ -8,25 +8,19 @@
 # .ssh, .aws or similar files with keys/passwords.
 # These paths are relative to the $HOME dir.
 confs=(
-    ".config/gtk-2.0" \
-    ".config/gtk-3.0" \
-    ".emacs" \
-    ".ghc/ghci.conf" \
-    ".gdbinit" \
-    ".gitconfig" \
-    ".gtkrc-2.0" \
-    ".i3" \
-    ".i3status.conf" \
-    ".latexmkrc" \
-    ".local/share/applications" \
-    ".mcabberrc" \
-    ".nanorc" \
-    ".oh-my-zsh/themes/martin.zsh-theme" \
-    #".spectrwm.conf" \
-    #".xbindkeysrc" \
-    ".xinitrc" \
-    ".Xresources" \
-    ".zshrc" \
+    ".bashrc"
+    ".config/autorandr"
+    ".config/Code/User/settings.json"
+    ".config/Code/User/snippets"
+    ".gitconfig"
+    ".i3"
+    ".i3status.conf"
+    ".inputrc"
+    ".nanorc"
+    ".profile"
+    ".xinitrc"
+    ".Xresources"
+    ".zshrc"
 )
 
 # Path to the repo where configs are kept.
