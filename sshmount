@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+$MDIR=aws-clerk-dev-martin
+$HOST=aws-clerk-dev-martin
+$HDIR=/home/ec2-user
+
+case $1 in
+    "dev")
+        $MDIR=aws-clerk-dev-martin
+        $HOST=aws-clerk-dev-martin
+        $HDIR=/home/ec2-user
+        ;;
+    "gulag")
+        $MDIR=gulag
+        $HOST=gulag.martinnj.dk
+        $HDIR=/home/martin
+    *)
+        $MDIR=$1
+        $HOST=$1
+        $HDIR=/
+        ;;
+esac
+
+# Create mountpoint
+mkdir -p "~/$MDIR"
+
+# Mount remote home folder
+sshfs $HOST:$HDIR "~/$MDIR"

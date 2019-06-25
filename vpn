@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+# Check for existing VPN tunnel
+if pgrep openvpn; then pkill openvpn; fi
+
+# Start new tunnel
+cd openvpn/$1
+sudo openvpn --config $1.ovpn --daemon $1 > ~/.openvpn-client.log
