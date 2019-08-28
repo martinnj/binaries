@@ -11,7 +11,7 @@ confs=(
     ".bashrc"
     ".config/autorandr"
     ".config/Code/User/settings.json"
-    ".config/Code/User/snippets"
+    #".config/Code/User/snippets"
     ".gitconfig"
     ".i3"
     ".i3status.conf"
