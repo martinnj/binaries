@@ -16,6 +16,7 @@ confs=(
     ".i3"
     ".i3status.conf"
     ".inputrc"
+    ".local/share/DBeaverData/workspace6/.metadata/.plugins/org.jkiss.dbeaver.ui.dashboard/dashboards.xml"
     ".nanorc"
     ".profile"
     ".xinitrc"
